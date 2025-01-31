@@ -1,0 +1,15 @@
+{
+  "name": "taha-control-centre",
+  "version": "1.0.0",
+  "description": "Control center for gaming accessories",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "taha",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^23.1.0",
+    "usb": "^2.14.0"
+  }
+}

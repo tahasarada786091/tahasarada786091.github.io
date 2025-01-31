@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Accessories Control Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --nemo-bg: #e0e0e0;
+            --nemo-shadow-light: #ffffff;
+            --nemo-shadow-dark: #bebebe;
+            --accent-color: #ffa500;
+        }
+
+        body {
+            background: var(--nemo-bg);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .neomorphic {
+            border-radius: 15px;
+            background: var(--nemo-bg);
+            box-shadow: 5px 5px 10px var(--nemo-shadow-dark),
+                       -5px -5px 10px var(--nemo-shadow-light);
+        }
+
+        .neomorphic-inset {
+            border-radius: 15px;
+            background: var(--nemo-bg);
+            box-shadow: inset 5px 5px 10px var(--nemo-shadow-dark),
+                       inset -5px -5px 10px var(--nemo-shadow-light);
+        }
+
+        .device-connected {
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .keyboard-preview {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 4px;
+            padding: 20px;
+        }
+
+        .key {
+            aspect-ratio: 1;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .color-picker {
+            width: 100%;
+            height: 150px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .scanning {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex min-h-screen">
+        
+        <div class="neomorphic w-64 p-4 m-4 flex flex-col space-y-4">
+            <div class="text-xl font-bold text-gray-800 mb-6">Control Center</div>
+            
+            <div id="deviceScanner" class="neomorphic-inset p-4 mb-4">
+                <div class="text-sm font-semibold mb-2">Device Scanner</div>
+                <div id="scanningStatus" class="scanning text-xs text-gray-600">Scanning for devices...</div>
+                <div id="connectedDevices" class="mt-2"></div>
+            </div>
+
+            <button class="neomorphic p-3 flex items-center space-x-2" onclick="showSection('keyboard')">
+                <i class="bi bi-keyboard text-xl"></i>
+                <span>Keyboard</span>
+            </button>
+
+            <button class="neomorphic p-3 flex items-center space-x-2" onclick="showSection('mouse')">
+                <i class="bi bi-mouse text-xl"></i>
+                <span>Mouse</span>
+            </button>
+
+            <button class="neomorphic p-3 flex items-center space-x-2" onclick="showSection('headset')">
+                <i class="bi bi-headphones text-xl"></i>
+                <span>Headset</span>
+            </button>
+        </div>
+
+        
+        <div class="flex-1 p-4">
+          
+            <div id="keyboard-section" class="hidden">
+                <div class="neomorphic p-6 mb-4">
+                    <h2 class="text-xl font-bold mb-4">Keyboard Configuration</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="neomorphic-inset p-4">
+                            <h3 class="font-semibold mb-2">RGB Control</h3>
+                            <input type="color" class="color-picker neomorphic mb-2" id="keyboardColor">
+                            <div class="flex space-x-2 mt-2">
+                                <button class="neomorphic p-2 flex-1" onclick="setKeyboardEffect('rainbow')">Rainbow</button>
+                                <button class="neomorphic p-2 flex-1" onclick="setKeyboardEffect('breathing')">Breathing</button>
+                                <button class="neomorphic p-2 flex-1" onclick="setKeyboardEffect('static')">Static</button>
+                            </div>
+                        </div>
+                        <div class="neomorphic-inset p-4">
+                            <h3 class="font-semibold mb-2">Macro Settings</h3>
+                            <div class="space-y-2">
+                                <button class="neomorphic p-2 w-full" onclick="recordMacro()">Record New Macro</button>
+                                <button class="neomorphic p-2 w-full" onclick="editMacros()">Edit Macros</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="keyboard-preview neomorphic-inset mt-4" id="keyboardPreview"></div>
+                </div>
+            </div>
+
+            
+            <div id="mouse-section" class="hidden">
+                <div class="neomorphic p-6">
+                    <h2 class="text-xl font-bold mb-4">Mouse Configuration</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="neomorphic-inset p-4">
+                            <h3 class="font-semibold mb-2">DPI Settings</h3>
+                            <input type="range" min="400" max="16000" step="100" class="w-full" id="dpiSlider">
+                            <div class="text-center mt-2" id="dpiValue">800 DPI</div>
+                        </div>
+                        <div class="neomorphic-inset p-4">
+                            <h3 class="font-semibold mb-2">Button Configuration</h3>
+                            <div class="space-y-2">
+                                <button class="neomorphic p-2 w-full" onclick="configureMouseButtons()">Configure Buttons</button>
+                                <button class="neomorphic p-2 w-full" onclick="resetMouseConfig()">Reset to Default</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div id="headset-section" class="hidden">
+                <div class="neomorphic p-6">
+                    <h2 class="text-xl font-bold mb-4">Headset Configuration</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="neomorphic-inset p-4">
+                            <h3 class="font-semibold mb-2">Audio Settings</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label>Volume</label>
+                                    <input type="range" class="w-full" id="volumeSlider">
+                                </div>
+                                <div>
+                                    <label>Microphone</label>
+                                    <input type="range" class="w-full" id="micSlider">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="neomorphic-inset p-4">
+                            <h3 class="font-semibold mb-2">Equalizer</h3>
+                            <div class="grid grid-cols-5 gap-2" id="equalizer">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function sendUsbCommand(command) {
+    // Electron's IPC mechanism to communicate with the main process
+    require('electron').ipcRenderer.send('send-usb-command', command);
+  }
+
+  document.getElementById('mouseButton').addEventListener('click', () => {
+    sendUsbCommand('mouseCommand');
+  });
+
+  document.getElementById('keyboardButton').addEventListener('click', () => {
+    sendUsbCommand('keyboardCommand');
+  });
+
+  document.getElementById('headsetButton').addEventListener('click', () => {
+    sendUsbCommand('headsetCommand');
+  });
+        const { exec } = require('child_process');
+
+  function sendUsbCommand(command) {
+    exec(`node usb.js ${command}`, (error, stdout, stderr) => {
+      if (error) {
+        console.error('Error sending USB command:', error);
+        return;
+      }
+      console.log('USB command response:', stdout);
+    });
+  }
+
+  document.getElementById('mouseButton').addEventListener('click', () => {
+    sendUsbCommand('mouseCommand');
+  });
+
+  document.getElementById('keyboardButton').addEventListener('click', () => {
+    sendUsbCommand('keyboardCommand');
+  });
+
+  document.getElementById('headsetButton').addEventListener('click', () => {
+    sendUsbCommand('headsetCommand');
+  });
+
+
+        const { exec } = require('child_process');
+
+function updateHeadsetVolume(volume) {
+  exec(`node usb.js setVolume ${volume}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error('Error updating headset volume:', error);
+      return;
+    }
+    console.log('Headset volume updated:', stdout);
+  });
+}
+
+document.getElementById('volumeSlider').addEventListener('input', (event) => {
+  const volume = event.target.value;
+  updateHeadsetVolume(volume);
+}); 
+       
+        // Import necessary libraries
+        import { AudioContext } from 'web-audio-api';
+            import { HIDDevice } from 'webhid-api';
+            import { Keyboard } from 'keyboard-api';
+            import { Pointer } from 'pointer-api';
+
+            // Initialize variables
+            let audioContext;
+            let headsetDevice;
+            let keyboardDevice;
+            let mouseDevice;
+
+            // Initialize headset volume control
+            function initHeadsetVolumeControl() {
+                // Create an AudioContext
+                audioContext = new AudioContext();
+
+                // Get a list of available audio devices
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        // Get the headset device
+                        headsetDevice = stream.getAudioTracks()[0].getSources()[0];
+
+                        // Create a gain node to control the volume
+                        const gainNode = audioContext.createGain();
+                        gainNode.gain.value = 0.5; // Initial volume
+
+                        // Connect the gain node to the headset device
+                        gainNode.connect(headsetDevice);
+
+                        // Update the volume slider
+                        document.getElementById('volumeSlider').addEventListener('input', event => {
+                            gainNode.gain.value = event.target.value / 100;
+                        });
+                    })
+                    .catch(error => console.error('Error initializing headset volume control:', error));
+            }
+
+            // Initialize keyboard control
+            function initKeyboardControl() {
+                // Request permission to access the keyboard
+                navigator.hid.requestDevice({ filters: [{ vendorId: 0x03EB, productId: 0x6124 }] })
+                    .then(devices => {
+                        // Get the keyboard device
+                        keyboardDevice = devices[0];
+
+                        // Open the keyboard device
+                        keyboardDevice.open()
+                            .then(() => {
+                                // Send a command to the keyboard to turn on the backlight
+                                keyboardDevice.sendReport(0x01, [0x01, 0x01, 0x01, 0x01]);
+                            })
+                            .catch(error => console.error('Error opening keyboard device:', error));
+                    })
+                    .catch(error => console.error('Error requesting keyboard device:', error));
+            }
+
+            // Initialize mouse control
+            function initMouseControl() {
+                // Request permission to access the mouse
+                navigator.hid.requestDevice({ filters: [{ vendorId: 0x03EB, productId: 0x6125 }] })
+                    .then(devices => {
+                        // Get the mouse device
+                        mouseDevice = devices[0];
+
+                        // Open the mouse device
+                        mouseDevice.open()
+                            .then(() => {
+                                // Send a command to the mouse to change the DPI
+                                mouseDevice.sendReport(0x01, [0x01, 0x01, 0x01, 0x01]);
+                            })
+                            .catch(error => console.error('Error opening mouse device:', error));
+                    })
+                    .catch(error => console.error('Error requesting mouse device:', error));
+            }
+
+            // Initialize the control center
+            function initControlCenter() {
+                initHeadsetVolumeControl();
+                initKeyboardControl();
+                initMouseControl();
+            }
+
+            // Call the initialization function
+            initControlCenter();
+
+        function initDeviceScanner() {
+            const connectedDevices = document.getElementById('connectedDevices');
+            const devices = [
+                { name: 'Gaming Keyboard', connected: Math.random() > 0.3 },
+                { name: 'Gaming Mouse', connected: Math.random() > 0.3 },
+                { name: 'Gaming Headset', connected: Math.random() > 0.3 }
+            ];
+
+            connectedDevices.innerHTML = devices.map(device => `
+                <div class="flex items-center space-x-2 my-1">
+                    <span class="${device.connected ? 'device-connected' : 'text-red-500'}">●</span>
+                    <span class="text-sm">${device.name}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('scanningStatus').classList.remove('scanning');
+        }
+
+        
+        function showSection(section) {
+            ['keyboard-section', 'mouse-section', 'headset-section'].forEach(s => {
+                document.getElementById(s).classList.add('hidden');
+            });
+            document.getElementById(`${section}-section`).classList.remove('hidden');
+        }
+
+        
+        function initKeyboard() {
+            const preview = document.getElementById('keyboardPreview');
+            const keys = Array(60).fill().map((_, i) => `
+                <div class="key neomorphic" data-key="${i}" onclick="configureKey(${i})">
+                    ${String.fromCharCode(65 + (i % 26))}
+                </div>
+            `).join('');
+            preview.innerHTML = keys;
+        }
+
+        function setKeyboardEffect(effect) {
+            const keys = document.querySelectorAll('.key');
+            keys.forEach(key => {
+                key.style.transition = '0.3s';
+                if (effect === 'rainbow') {
+                    key.style.background = `hsl(${Math.random() * 360}, 70%, 50%)`;
+                } else if (effect === 'breathing') {
+                    key.style.animation = 'pulse 2s infinite';
+                } else {
+                    key.style.background = document.getElementById('keyboardColor').value;
+                }
+            });
+        }
+
+       
+        function initMouse() {
+            const dpiSlider = document.getElementById('dpiSlider');
+            dpiSlider.addEventListener('input', (e) => {
+                document.getElementById('dpiValue').textContent = `${e.target.value} DPI`;
+            });
+        }
+
+        
+        function initHeadset() {
+            const equalizer = document.getElementById('equalizer');
+            const bands = ['60Hz', '170Hz', '310Hz', '600Hz', '1k', '3k', '6k', '12k', '14k', '16k'];
+            equalizer.innerHTML = bands.map(band => `
+                <div class="flex flex-col items-center">
+                    <input type="range" orient="vertical" class="h-24">
+                    <span class="text-xs mt-1">${band}</span>
+                </div>
+            `).join('');
+        }
+
+        
+        window.onload = () => {
+            initDeviceScanner();
+            initKeyboard();
+            initMouse();
+            initHeadset();
+            showSection('keyboard');
+        };
+    </script>
+    <script>
+        const { ipcRenderer } = require('electron');
+      
+        async function detectDevices() {
+          const devices = await ipcRenderer.invoke('detect-usb-devices');
+          const connectedDevices = document.getElementById('connectedDevices');
+          connectedDevices.innerHTML = devices.map(device => `
+            <div class="flex items-center space-x-2 my-1">
+              <span class="device-connected">●</span>
+              <span class="text-sm">VID: ${device.vendorId}, PID: ${device.productId}</span>
+            </div>
+          `).join('');
+          document.getElementById('scanningStatus').classList.remove('scanning');
+        }
+      
+        function sendUsbCommand(command) {
+          ipcRenderer.invoke('send-usb-command', command).then(response => {
+            console.log('USB command response:', response);
+          }).catch(error => {
+            console.error('Error sending USB command:', error);
+          });
+        }
+      
+        document.getElementById('mouseButton').addEventListener('click', () => {
+          sendUsbCommand('mouseCommand');
+        });
+      
+        document.getElementById('keyboardButton').addEventListener('click', () => {
+          sendUsbCommand('keyboardCommand');
+        });
+      
+        document.getElementById('headsetButton').addEventListener('click', () => {
+          sendUsbCommand('headsetCommand');
+        });
+      
+        document.addEventListener('DOMContentLoaded', () => {
+          detectDevices();
+        });
+      </script>
+<script>
+    const { ipcRenderer } = require('electron');
+  
+    async function detectDevices() {
+      const devices = await ipcRenderer.invoke('detect-usb-devices');
+      const connectedDevices = document.getElementById('connectedDevices');
+      connectedDevices.innerHTML = devices.map(device => `
+        <div class="flex items-center space-x-2 my-1">
+          <span class="device-connected">●</span>
+          <span class="text-sm">VID: ${device.vendorId}, PID: ${device.productId}</span>
+        </div>
+      `).join('');
+      document.getElementById('scanningStatus').classList.remove('scanning');
+    }
+  
+    function sendUsbCommand(command) {
+      ipcRenderer.invoke('send-usb-command', command).then(response => {
+        console.log('USB command response:', response);
+      }).catch(error => {
+        console.error('Error sending USB command:', error);
+      });
+    }
+  
+    document.getElementById('mouseButton').addEventListener('click', () => {
+      sendUsbCommand('mouseCommand');
+    });
+  
+    document.getElementById('keyboardButton').addEventListener('click', () => {
+      sendUsbCommand('keyboardCommand');
+    });
+  
+    document.getElementById('headsetButton').addEventListener('click', () => {
+      sendUsbCommand('headsetCommand');
+    });
+  
+    document.addEventListener('DOMContentLoaded', () => {
+      detectDevices();
+    });
+  </script>
+        <script>
+            const { ipcRenderer } = require('electron');
+          
+            async function detectDevices() {
+              const devices = await ipcRenderer.invoke('detect-usb-devices');
+              const connectedDevices = document.getElementById('connectedDevices');
+              connectedDevices.innerHTML = devices.map(device => `
+                <div class="flex items-center space-x-2 my-1">
+                  <span class="device-connected">●</span>
+                  <span class="text-sm">VID: ${device.vendorId}, PID: ${device.productId}</span>
+                </div>
+              `).join('');
+              document.getElementById('scanningStatus').classList.remove('scanning');
+            }
+          
+            function sendUsbCommand(command) {
+              ipcRenderer.invoke('send-usb-command', command).then(response => {
+                console.log('USB command response:', response);
+              }).catch(error => {
+                console.error('Error sending USB command:', error);
+              });
+            }
+          
+            document.getElementById('mouseButton').addEventListener('click', () => {
+              sendUsbCommand('mouseCommand');
+            });
+          
+            document.getElementById('keyboardButton').addEventListener('click', () => {
+              sendUsbCommand('keyboardCommand');
+            });
+          
+            document.getElementById('headsetButton').addEventListener('click', () => {
+              sendUsbCommand('headsetCommand');
+            });
+          
+            document.addEventListener('DOMContentLoaded', () => {
+              detectDevices();
+            });
+          </script>
+          
+    <script src="usb.js"></script>
+</body>
+</html>
