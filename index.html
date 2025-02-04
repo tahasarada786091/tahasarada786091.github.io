@@ -89,17 +89,17 @@
                 <div id="connectedDevices" class="mt-2"></div>
             </div>
 
-            <button class="neomorphic p-3 flex items-center space-x-2" onclick="showSection('keyboard')">
+            <button class="neomorphic p-3 flex items-center space-x-2" onclick="showSection('keyboard')" id="KeyboardButton">
                 <i class="bi bi-keyboard text-xl"></i>
                 <span>Keyboard</span>
             </button>
 
-            <button class="neomorphic p-3 flex items-center space-x-2" onclick="showSection('mouse')">
+            <button class="neomorphic p-3 flex items-center space-x-2" onclick="showSection('mouse')" id="mouseButton">
                 <i class="bi bi-mouse text-xl"></i>
                 <span>Mouse</span>
             </button>
 
-            <button class="neomorphic p-3 flex items-center space-x-2" onclick="showSection('headset')">
+            <button class="neomorphic p-3 flex items-center space-x-2" onclick="showSection('headset')" id="headsetButton">
                 <i class="bi bi-headphones text-xl"></i>
                 <span>Headset</span>
             </button>
@@ -108,18 +108,29 @@
         
         <div class="flex-1 p-4">
           
-            <div id="keyboard-section" class="hidden">
-                <div class="neomorphic p-6 mb-4">
-                    <h2 class="text-xl font-bold mb-4">Keyboard Configuration</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="neomorphic-inset p-4">
-                            <h3 class="font-semibold mb-2">RGB Control</h3>
-                            <input type="color" class="color-picker neomorphic mb-2" id="keyboardColor">
-                            <div class="flex space-x-2 mt-2">
-                                <button class="neomorphic p-2 flex-1" onclick="setKeyboardEffect('rainbow')">Rainbow</button>
-                                <button class="neomorphic p-2 flex-1" onclick="setKeyboardEffect('breathing')">Breathing</button>
-                                <button class="neomorphic p-2 flex-1" onclick="setKeyboardEffect('static')">Static</button>
-                            </div>
+          <div id="keyboard-section" class="hidden">
+            <div class="neomorphic p-6 mb-4">
+                <h2 class="text-xl font-bold mb-4">Keyboard Configuration</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="neomorphic-inset p-4">
+                        <h3 class="font-semibold mb-2">RGB Control</h3>
+                        <input type="color" class="color-picker neomorphic mb-2" id="keyboardColor">
+                        <div class="flex space-x-2 mt-2">
+                            <button class="neomorphic p-2 flex-1" onclick="setRGBColor(255, 0, 0)">Red</button>
+                            <button class="neomorphic p-2 flex-1" onclick="setRGBColor(0, 255, 0)">Green</button>
+                            <button class="neomorphic p-2 flex-1" onclick="setRGBColor(0, 0, 255)">Blue</button>
+                        </div>
+                    </div>
+                    <div class="neomorphic-inset p-4">
+                        <h3 class="font-semibold mb-2">Macro Settings</h3>
+                        <div class="space-y-2">
+                            <button id="recordMacro" class="neomorphic p-2 w-full">Record New Macro</button>
+                            <button id="editMacros" class="neomorphic p-2 w-full">Edit Macros</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
                         </div>
                         <div class="neomorphic-inset p-4">
                             <h3 class="font-semibold mb-2">Macro Settings</h3>
@@ -135,54 +146,57 @@
 
             
             <div id="mouse-section" class="hidden">
-                <div class="neomorphic p-6">
-                    <h2 class="text-xl font-bold mb-4">Mouse Configuration</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="neomorphic-inset p-4">
-                            <h3 class="font-semibold mb-2">DPI Settings</h3>
-                            <input type="range" min="400" max="16000" step="100" class="w-full" id="dpiSlider">
-                            <div class="text-center mt-2" id="dpiValue">800 DPI</div>
-                        </div>
-                        <div class="neomorphic-inset p-4">
-                            <h3 class="font-semibold mb-2">Button Configuration</h3>
-                            <div class="space-y-2">
-                                <button class="neomorphic p-2 w-full" onclick="configureMouseButtons()">Configure Buttons</button>
-                                <button class="neomorphic p-2 w-full" onclick="resetMouseConfig()">Reset to Default</button>
+              <div class="neomorphic p-6">
+                  <h2 class="text-xl font-bold mb-4">Mouse Configuration</h2>
+                  <div class="grid grid-cols-2 gap-4">
+                      <div class="neomorphic-inset p-4">
+                          <h3 class="font-semibold mb-2">DPI Settings</h3>
+                          <input type="range" min="400" max="16000" step="100" class="w-full" id="dpiSlider">
+                          <div class="text-center mt-2" id="dpiValue">800 DPI</div>
+                      </div>
+                      <div class="neomorphic-inset p-4">
+                          <h3 class="font-semibold mb-2">Button Configuration</h3>
+                          <div class="space-y-2">
+                              <button id="configureMouseButtons" class="neomorphic p-2 w-full">Configure Buttons</button>
+                              <button id="resetMouseConfig" class="neomorphic p-2 w-full">Reset to Default</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+            
+          <div id="headset-section" class="hidden">
+            <div class="neomorphic p-6">
+                <h2 class="text-xl font-bold mb-4">Headset Configuration</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="neomorphic-inset p-4">
+                        <h3 class="font-semibold mb-2">Audio Settings</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label>Volume</label>
+                                <input type="range" class="w-full" id="volumeSlider">
+                            </div>
+                            <div>
+                                <label>Microphone</label>
+                                <input type="range" class="w-full" id="micSlider">
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            
-            <div id="headset-section" class="hidden">
-                <div class="neomorphic p-6">
-                    <h2 class="text-xl font-bold mb-4">Headset Configuration</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="neomorphic-inset p-4">
-                            <h3 class="font-semibold mb-2">Audio Settings</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label>Volume</label>
-                                    <input type="range" class="w-full" id="volumeSlider">
-                                </div>
-                                <div>
-                                    <label>Microphone</label>
-                                    <input type="range" class="w-full" id="micSlider">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="neomorphic-inset p-4">
-                            <h3 class="font-semibold mb-2">Equalizer</h3>
-                            <div class="grid grid-cols-5 gap-2" id="equalizer">
-                                
-                            </div>
+                    <div class="neomorphic-inset p-4">
+                        <h3 class="font-semibold mb-2">Equalizer</h3>
+                        <div class="grid grid-cols-5 gap-2" id="equalizer">
+                            <!-- Equalizer bands -->
+                            <input type="range" orient="vertical" class="h-24">
+                            <input type="range" orient="vertical" class="h-24">
+                            <input type="range" orient="vertical" class="h-24">
+                            <input type="range" orient="vertical" class="h-24">
+                            <input type="range" orient="vertical" class="h-24">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <script>
         function sendUsbCommand(command) {
