@@ -72,6 +72,10 @@
         }
     </style>
 </head>
+    <button id="connectButton" class="neomorphic p-3 flex items-center space-x-2">
+    <i class="bi bi-usb-plug text-xl"></i>
+    <span>Connect to USB Device</span>
+</button>
 <body class="bg-gray-100">
     <div class="flex min-h-screen">
         
@@ -178,15 +182,7 @@
             </div>
         </div>
     </div>
-<div id="deviceScanner" class="neomorphic-inset p-4 mb-4">
-    <div class="text-sm font-semibold mb-2">Device Scanner</div>
-    <div id="scanningStatus" class="scanning text-xs text-gray-600">Scanning for devices...</div>
-    <div id="connectedDevices" class="mt-2"></div>
-</div>
-<button id="connectButton" class="neomorphic p-3 flex items-center space-x-2">
-    <i class="bi bi-usb-plug text-xl"></i>
-    <span>Connect to USB Device</span>
-</button>
+
     <script>
         function sendUsbCommand(command) {
     // Electron's IPC mechanism to communicate with the main process
