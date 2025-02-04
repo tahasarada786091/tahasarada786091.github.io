@@ -1,8 +1,7 @@
-
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { exec } = require('child_process');
-const usb = require('./usb.js');
+const usb = require('./usbControl.js'); // Updated to use usbControl.js
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -22,7 +21,7 @@ function createWindow() {
   });
 
   ipcMain.handle('send-usb-command', (event, command) => {
-    exec(`node usb.js ${command}`, (error, stdout, stderr) => {
+    exec(`node usbControl.js ${command}`, (error, stdout, stderr) => {
       if (error) {
         console.error('Error sending USB command:', error);
         return;
